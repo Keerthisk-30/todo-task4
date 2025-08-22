@@ -1,0 +1,20 @@
+{
+  "name": "todo-task4",
+  "version": "1.0.0",
+  "description": "Todo App Task 4 - LocalStorage + API Sync",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "Keerthi",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
