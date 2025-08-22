@@ -1,51 +1,53 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const path = require("path");
 
 const app = express();
-const PORT = 3000;
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static("public")); // if you have frontend files in "public" folder
 
-// Serve frontend (public folder)
-app.use(express.static(path.join(__dirname, "public")));
+// Sample in-memory tasks (replace with DB if needed)
+let tasks = [
+  { id: 1, title: "Sample Task", completed: false }
+];
 
-// In-memory tasks
-let tasks = [];
-
-// API routes
-app.get("/tasks", (req, res) => {
+// API Routes
+app.get("/api/tasks", (req, res) => {
   res.json(tasks);
 });
 
-app.post("/tasks", (req, res) => {
-  const task = { id: Date.now(), text: req.body.text, done: false };
-  tasks.push(task);
-  res.json(task);
+app.post("/api/tasks", (req, res) => {
+  const newTask = {
+    id: tasks.length + 1,
+    title: req.body.title,
+    completed: false
+  };
+  tasks.push(newTask);
+  res.json(newTask);
 });
 
-app.put("/tasks/:id", (req, res) => {
-  const task = tasks.find(t => t.id == req.params.id);
+app.put("/api/tasks/:id", (req, res) => {
+  const taskId = parseInt(req.params.id);
+  const task = tasks.find(t => t.id === taskId);
   if (task) {
-    task.done = !task.done;
+    task.completed = req.body.completed;
     res.json(task);
   } else {
-    res.status(404).json({ error: "Task not found" });
+    res.status(404).json({ message: "Task not found" });
   }
 });
 
-app.delete("/tasks/:id", (req, res) => {
-  tasks = tasks.filter(t => t.id != req.params.id);
-  res.json({ success: true });
+app.delete("/api/tasks/:id", (req, res) => {
+  const taskId = parseInt(req.params.id);
+  tasks = tasks.filter(t => t.id !== taskId);
+  res.json({ message: "Task deleted" });
 });
 
-// Fallback: serve index.html for any unknown routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
+// PORT for Render
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
